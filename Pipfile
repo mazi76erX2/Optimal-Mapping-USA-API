@@ -12,6 +12,8 @@ drf-yasg = "1.21.8"
 redis = "5.1.1"
 gunicorn = "23.0.0"
 uvicorn = "0.32.0"
+requests = "2.31.0"
+polyline = "2.0.0"
 
 [dev-packages]
 mypy = "1.13.0"
@@ -25,4 +27,4 @@ drf-yasg-stubs = "0.1.4"
 djangorestframework-stubs = "1.4.0"
 
 [requires]
-python_version = "3.13"
+python_version = "3.12"
