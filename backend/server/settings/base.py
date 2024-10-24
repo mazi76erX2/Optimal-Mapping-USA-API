@@ -49,9 +49,24 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.gis",  # Added GIS
     # 3rd-party
     "rest_framework",
+    # Local
+    "route_planner",
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://localhost:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    }
+}
+
+ROUTE_CACHE_TIMEOUT = 86400  # 24 hours in seconds
 
 # configure DRF
 REST_FRAMEWORK = {
@@ -101,8 +116,8 @@ ASGI_APPLICATION = "server.asgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DATABASE_NAME", "django-app"),
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": os.environ.get("DATABASE_NAME", "optimal-mapping"),
         "USER": os.environ.get("DATABASE_USERNAME", "postgres"),
         "PASSWORD": os.environ.get("DATABASE_PASSWORD", "postgres"),
         "HOST": os.environ.get("DATABASE_HOST", "127.0.0.1"),
@@ -157,3 +172,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
+
+MAP_QUEST_API_KEY = os.environ.get("MAP_QUEST_API_KEY")
+MAP_QUEST_URL = "http://www.mapquestapi.com/directions/v2/route"
+
+# Project settings
+MILES_PER_GALLON = 10
+MAX_RANGE = 500
+CACHE_TIMEOUT = 3600  # 1 hour
