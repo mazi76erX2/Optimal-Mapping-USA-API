@@ -12,8 +12,9 @@ drf-yasg = "1.21.8"
 redis = "5.1.1"
 gunicorn = "23.0.0"
 uvicorn = "0.32.0"
-requests = "2.31.0"
-polyline = "2.0.0"
+requests = "2.32.3"
+django-redis = "5.4.0"
+geopy = "2.4.1"
 
 [dev-packages]
 mypy = "1.13.0"

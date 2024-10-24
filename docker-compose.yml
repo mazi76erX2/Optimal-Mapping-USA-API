@@ -5,16 +5,18 @@ services:
       context: .
       dockerfile: ./docker/backend/Dockerfile
     entrypoint: /app/docker/backend/entrypoint.sh
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python manage.py runserver 0.0.0.0:8002
+    environment:
+      - MAP_QUEST_API_KEY=${MAP_QUEST_API_KEY}
     depends_on:
       - db
       - redis
     networks:
       - backend
     ports:
-      - 8000:8000
+      - 8002:8002
     expose:
-      - 8000
+      - 8002
     env_file:
       - ./.env
   db:
