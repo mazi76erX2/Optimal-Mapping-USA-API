@@ -7,7 +7,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends gcc netcat \
-    libpq5 build-essential libpq-dev nginx curl
+    libpq5 build-essential libpq-dev nginx curl gdal-bin libgdal-dev
 
 # Install tools
 RUN pip3 install --progress-bar off --upgrade pip
@@ -28,6 +28,10 @@ COPY . .
 
 # Stage 3: Final image (production-ready)
 FROM app AS final
+
+# Set environment variables for GDAL
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # Add static files folder
 RUN mkdir /app/backend/staticfiles

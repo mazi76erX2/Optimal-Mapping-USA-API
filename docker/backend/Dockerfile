@@ -6,7 +6,7 @@ ENV TZ=UTC+2
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y netcat libpq5 build-essential libpq-dev curl
+RUN apt-get update && apt-get install -y netcat libpq5 build-essential libpq-dev curl gdal-bin libgdal-dev
 
 # Install tools
 RUN pip3 install --progress-bar off --upgrade pip
@@ -27,6 +27,10 @@ COPY . .
 
 # Stage 3: Final image (production-ready)
 FROM app AS final
+
+# Set environment variables for GDAL
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
 
 # Install development dependencies
 RUN pipenv install --dev

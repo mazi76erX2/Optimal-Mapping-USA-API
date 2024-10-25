@@ -8,6 +8,7 @@ services:
     command: python manage.py runserver 0.0.0.0:8002
     environment:
       - MAP_QUEST_API_KEY=${MAP_QUEST_API_KEY}
+      - GDAL_LIBRARY_PATH=/usr/lib/libgdal.so 
     depends_on:
       - db
       - redis

@@ -9,6 +9,9 @@ services:
       --chdir ./backend
       --bind 0.0.0.0:8000 
       -k uvicorn.workers.UvicornWorker"
+    environment:
+      - MAP_QUEST_API_KEY=${MAP_QUEST_API_KEY}
+      - GDAL_LIBRARY_PATH=/usr/lib/libgdal.so 
     volumes:
       - ./backend:/app/backend
     depends_on:
