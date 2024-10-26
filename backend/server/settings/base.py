@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",  # Added GIS
     # 3rd-party
     "rest_framework",
+    "drf_yasg",
     # Local
     "route_planner",
 ]
@@ -174,7 +175,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
 
 MAP_QUEST_API_KEY = os.environ.get("MAP_QUEST_API_KEY")
-MAP_QUEST_URL = "http://www.mapquestapi.com/directions/v2/route"
+MAP_QUEST_URL = "http://www.mapquestapi.com"
 
 # Project settings
 MILES_PER_GALLON = 10
