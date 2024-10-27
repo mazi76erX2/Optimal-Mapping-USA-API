@@ -7,12 +7,7 @@ from ...models import Station
 
 
 class Command(BaseCommand):
-    """Import stations using command"""
-
     help = "Import stations from CSV file without geocoding"
-
-    def add_arguments(self, parser):
-        parser.add_argument("csv_file", nargs="?", type=str, default="stations.csv")
 
     def handle(self, *args, **options):
         csv_file = options["csv_file"]
@@ -40,33 +35,49 @@ class Command(BaseCommand):
                             final_mappings[model_field] = csv_field
                             break
 
-                row_counts = 0
+                row_count = 0
+                stations_added = 0
                 for row in reader:
-                    station_data = {}
-                    for model_field, csv_field in final_mappings.items():
-                        value = row[csv_field].strip()
+                    row_count += 1  # Moved counter here
+                    try:
+                        station_data = {}
+                        for model_field, csv_field in final_mappings.items():
+                            value = row[csv_field].strip()
 
-                        if model_field in ["opis_id", "rack_id"]:
-                            station_data[model_field] = int(value)
-                        elif model_field == "price":
-                            station_data[model_field] = Decimal(value)
-                        else:
-                            station_data[model_field] = value
+                            if model_field in ["opis_id", "rack_id"]:
+                                station_data[model_field] = int(value)
+                            elif model_field == "price":
+                                station_data[model_field] = Decimal(value)
+                            else:
+                                station_data[model_field] = value
 
-                        row_counts += 1
+                        # Set a default point
+                        station_data["location"] = Point(0, 0, srid=4326)
 
-                    # Set a default point (can be updated later when needed)
-                    station_data["location"] = Point(0, 0, srid=4326)
+                        # Create or update station
+                        station, created = Station.objects.update_or_create(
+                            opis_id=station_data["opis_id"], defaults=station_data
+                        )
+                        stations_added += 1
 
-                    # Create or update station
-                    Station.objects.update_or_create(
-                        opis_id=station_data["opis_id"], defaults=station_data
-                    )
+                        if row_count % 1000 == 0:  # Progress reporting
+                            self.stdout.write(f"Processed {row_count} rows...")
+
+                    except Exception as e:
+                        self.stdout.write(
+                            self.style.WARNING(
+                                f"Error processing row {row_count}: {str(e)}"
+                            )
+                        )
+
+                self.stdout.write(f"{row_count} rows in CSV.")
+                self.stdout.write(f"{stations_added} stations processed successfully.")
 
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR(f"CSV file not found: {csv_file}"))
             return
 
-        self.stdout.write(self.style.SUCCESS(f"{row_count} rows in CSV."))
-        self.stdout.write(self.style.SUCCESS(f"{Stations.objects.all()} stations add."))
+        self.stdout.write(
+            self.style.SUCCESS(f"{Station.objects.count()} stations in database.")
+        )
         self.stdout.write(self.style.SUCCESS("Station import completed"))
